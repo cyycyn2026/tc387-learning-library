@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TC387 个人学习资料库</title>
+    <meta
+      name="description"
+      content="面向 TC387、AUTOSAR、Trap、Memory Map、NvM/Fee 和 C 指针薄弱点的个人学习资料库。"
+    />
+    <style>
+      :root {
+        --bg: #f5f7f4;
+        --ink: #17211b;
+        --muted: #637067;
+        --line: #dce3dc;
+        --panel: #ffffff;
+        --green: #23715a;
+        --blue: #276f9f;
+        --red: #a5483f;
+        --gold: #966c18;
+        --teal: #0c8079;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 28px;
+        min-height: 520px;
+        padding: 56px clamp(20px, 5vw, 72px) 40px;
+        background:
+          linear-gradient(135deg, rgba(35, 113, 90, 0.12), transparent 34%),
+          linear-gradient(90deg, #eef4eb, #f6f1e6 58%, #edf3f5);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .hero-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .eyebrow,
+      .kicker {
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 940px;
+        margin: 16px 0 20px;
+        font-size: clamp(38px, 6vw, 76px);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .hero p {
+        max-width: 760px;
+        color: #3e4b42;
+        font-size: 19px;
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .hero-actions a,
+      button {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #1f5f4d;
+        border-radius: 8px;
+        background: #1f5f4d;
+        color: #fff;
+        font-weight: 900;
+        padding: 11px 18px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .hero-actions a + a,
+      .ghost {
+        background: transparent;
+        color: #1f5f4d;
+      }
+
+      .hero-panel {
+        align-self: center;
+        min-height: 360px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        border: 1px solid rgba(31, 95, 77, 0.24);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 24px 70px rgba(32, 54, 43, 0.13);
+        padding: 28px;
+      }
+
+      .hero-panel strong {
+        margin-top: 10px;
+        font-size: 30px;
+      }
+
+      .meter {
+        height: 10px;
+        margin: 22px 0 12px;
+        border-radius: 999px;
+        background: #d7dfd7;
+        overflow: hidden;
+      }
+
+      .meter i {
+        display: block;
+        width: 38%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--red), var(--gold), var(--green));
+      }
+
+      .shell {
+        width: min(1440px, 100%);
+        margin: 0 auto;
+        padding: 34px clamp(16px, 4vw, 48px) 72px;
+      }
+
+      .toolbar,
+      .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        margin: 6px 0 0;
+        font-size: clamp(24px, 3vw, 38px);
+        line-height: 1.2;
+      }
+
+      .search {
+        width: min(420px, 100%);
+        display: grid;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        outline: none;
+        padding: 13px 14px;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      .tabs,
+      .daily,
+      .radar,
+      .cards,
+      .notes {
+        display: grid;
+        gap: 14px;
+      }
+
+      .tabs {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin-bottom: 22px;
+      }
+
+      .tab,
+      .daily-card,
+      .radar-card,
+      .card,
+      .note,
+      .capture-form {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .tab {
+        min-height: 82px;
+        padding: 14px;
+        text-align: left;
+        color: var(--ink);
+      }
+
+      .tab span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .daily {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-bottom: 28px;
+      }
+
+      .daily-card,
+      .radar-card,
+      .note {
+        padding: 20px;
+      }
+
+      .daily-card span {
+        display: inline-flex;
+        border-radius: 999px;
+        background: #eef5ef;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 900;
+        padding: 5px 10px;
+      }
+
+      .radar {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin-bottom: 24px;
+      }
+
+      .radar-card div {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-weight: 900;
+      }
+
+      .bar {
+        height: 9px;
+        margin: 14px 0 10px;
+        border-radius: 999px;
+        background: #edf1ed;
+        overflow: hidden;
+      }
+
+      .bar i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--red), var(--gold), var(--green));
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        padding: 24px;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 7px;
+        background: var(--green);
+      }
+
+      .trap::before { background: var(--red); }
+      .memory::before { background: var(--blue); }
+      .autosar::before { background: var(--teal); }
+      .pointer::before { background: var(--gold); }
+
+      .topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .topline em {
+        border-radius: 999px;
+        background: #f0f3ef;
+        color: #445048;
+        font-style: normal;
+        padding: 5px 10px;
+      }
+
+      .card h3,
+      .note h3,
+      .daily-card h3 {
+        margin: 14px 0 8px;
+        line-height: 1.3;
+      }
+
+      p,
+      li {
+        color: #48554d;
+        line-height: 1.75;
+      }
+
+      .scenario,
+      .next {
+        border-radius: 8px;
+        padding: 14px;
+      }
+
+      .scenario {
+        border: 1px solid #dce5dc;
+        background: #f8faf6;
+      }
+
+      .next {
+        margin-top: 14px;
+        border-left: 4px solid #1f5f4d;
+        background: #eef5ef;
+        color: #254337;
+        font-weight: 900;
+      }
+
+      .reader {
+        display: grid;
+        grid-template-columns: 0.75fr 1.25fr;
+        gap: 18px;
+        margin-top: 24px;
+        border: 1px solid #cfdacf;
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .reader-aside {
+        padding: 26px;
+        background: #eef5ef;
+      }
+
+      .reader-main {
+        display: grid;
+        gap: 16px;
+        padding: 24px;
+      }
+
+      .reader-main section {
+        border-bottom: 1px solid #edf1ed;
+        padding-bottom: 16px;
+      }
+
+      .reader-main section:last-child {
+        border-bottom: 0;
+      }
+
+      .practice {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .practice div {
+        border: 1px solid #dfe6df;
+        border-radius: 8px;
+        background: #fafbf8;
+        padding: 14px;
+      }
+
+      .capture {
+        display: grid;
+        grid-template-columns: 0.86fr 1.14fr;
+        gap: 22px;
+        align-items: start;
+        margin-top: 42px;
+        padding-top: 34px;
+        border-top: 1px solid var(--line);
+      }
+
+      .capture-status {
+        margin-top: 18px;
+        border: 1px solid #c9d8ce;
+        border-radius: 8px;
+        background: #f8fbf7;
+        color: #245243;
+        font-weight: 900;
+        line-height: 1.55;
+        padding: 13px 14px;
+      }
+
+      .capture-form {
+        display: grid;
+        gap: 14px;
+        padding: 22px;
+      }
+
+      .capture-form label {
+        display: grid;
+        gap: 8px;
+        color: #3e4b42;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .notes {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .note div {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      @media (max-width: 1060px) {
+        .hero,
+        .capture,
+        .reader {
+          grid-template-columns: 1fr;
+        }
+
+        .tabs {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .radar,
+        .notes {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .hero {
+          min-height: auto;
+          padding-top: 36px;
+        }
+
+        h1 {
+          font-size: 38px;
+        }
+
+        .toolbar,
+        .section-head {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .tabs,
+        .daily,
+        .radar,
+        .cards,
+        .notes,
+        .form-row,
+        .practice {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">TC387 PERSONAL LEARNING LIBRARY</div>
+        <h1>把半吊子的知识，整理成可排查、可复习、可复用的工程经验。</h1>
+        <p>
+          这里不面向别人展示，只服务你自己：每天推进一小块，把 Trap、Memory Map、NvM/Fee、C 指针这些薄弱点，逐步变成能在项目里用得上的判断力。
+        </p>
+        <div class="hero-actions">
+          <a href="#capture">新增项目经验</a>
+          <a href="#daily">查看今日学习</a>
+        </div>
+      </div>
+      <aside class="hero-panel">
+        <span class="kicker">今日重点</span>
+        <strong>Trap 现场保存</strong>
+        <p>目标不是背概念，而是能从 Lauterbach 调用栈、异常地址和 map 文件定位下一步。</p>
+        <div class="meter"><i></i></div>
+        <small>当前阶段：会用一点，但需要形成排查路径</small>
+      </aside>
+    </section>
+
+    <main class="shell">
+      <div class="toolbar">
+        <div>
+          <span class="kicker">学习入口</span>
+          <h2>先按场景找，再进入文章</h2>
+        </div>
+        <label class="search">
+          <span>搜索</span>
+          <input id="search" placeholder="输入 Trap、Fee、指针、map..." />
+        </label>
+      </div>
+
+      <section class="tabs">
+        <button class="tab"><strong>每日带学</strong><span>每天推进一小块</span></button>
+        <button class="tab"><strong>Trap 排查</strong><span>调用栈到根因</span></button>
+        <button class="tab"><strong>Memory Map</strong><span>地址、段、链接</span></button>
+        <button class="tab"><strong>NvM / Fee</strong><span>结合 ISOLAR 工具</span></button>
+        <button class="tab"><strong>C 指针</strong><span>看懂真实用法</span></button>
+      </section>
+
+      <section id="daily" class="daily">
+        <article class="daily-card"><span>今天</span><h3>Trap 现场保存和调用栈判断</h3><p>完成一张 Trap 排查卡：现象、调用栈、可疑地址、下一步验证。</p></article>
+        <article class="daily-card"><span>明天</span><h3>Memory Map 与 map 文件阅读</h3><p>画出 TC387 常见地址段，并能说明变量为什么在那里。</p></article>
+        <article class="daily-card"><span>本周</span><h3>NvM 到 Fee 的 ISOLAR 配置链</h3><p>从一个 NvM Block 追到 Fee/Fls，写出配置路径和常见错误。</p></article>
+      </section>
+
+      <section class="radar">
+        <article class="radar-card"><div><strong>Trap 调用栈排查</strong><span>36%</span></div><p class="bar"><i style="width:36%"></i></p><p>能看现象，但缺少固定取证顺序。</p></article>
+        <article class="radar-card"><div><strong>Memory Map / LSL</strong><span>28%</span></div><p class="bar"><i style="width:28%"></i></p><p>知道有 map 文件，但工程用途还不稳。</p></article>
+        <article class="radar-card"><div><strong>NvM / Fee / ISOLAR</strong><span>32%</span></div><p class="bar"><i style="width:32%"></i></p><p>需要从配置链路建立整体感。</p></article>
+        <article class="radar-card"><div><strong>C 指针工程用法</strong><span>42%</span></div><p class="bar"><i style="width:42%"></i></p><p>能写一点，但读复杂入参会卡。</p></article>
+        <article class="radar-card"><div><strong>项目经验沉淀</strong><span>22%</span></div><p class="bar"><i style="width:22%"></i></p><p>需要把现场问题及时记录下来。</p></article>
+      </section>
+
+      <section class="cards" id="cards"></section>
+
+      <section class="reader" id="reader">
+        <aside class="reader-aside">
+          <span class="kicker">学习文章</span>
+          <h2 id="reader-title">进 Trap 后，先从调用栈还原事故现场</h2>
+          <p id="reader-opening">进 Trap 的第一反应不要是“这是哪个知识点我没背”，而是把它当成一个事故现场。事故现场最怕被破坏，所以你要先保存现场，再判断证据是否可信，最后沿着调用链往回找。</p>
+        </aside>
+        <article class="reader-main">
+          <section><h3>先用一个普通例子理解</h3><p id="reader-analogy"></p></section>
+          <section><h3>循序渐进学习路径</h3><ol id="reader-ladder"></ol></section>
+          <section><h3>工程排查清单</h3><ul id="reader-checklist"></ul></section>
+          <section><h3>下一次动手练习</h3><div class="practice" id="reader-practice"></div></section>
+        </article>
+      </section>
+
+      <section class="capture" id="capture">
+        <div>
+          <span class="kicker">电脑网页导入</span>
+          <h2>把新知识先收进来，再慢慢整理</h2>
+          <p>这个公开版先保证任何人都能访问。经验会保存在当前浏览器，同时可以导出备份；Sites 版本的云端数据库已部署，等平台公开权限恢复后会合并使用。</p>
+          <div class="capture-status" id="status">公开访问版已加载。当前保存位置：本浏览器。</div>
+        </div>
+        <form class="capture-form" id="note-form">
+          <label>标题<input name="title" placeholder="例如：Fee 写入失败后 NvM 数据未恢复" required /></label>
+          <div class="form-row">
+            <label>来源<input name="source" placeholder="项目、调试、同事提醒..." /></label>
+            <label>标签<input name="tag" value="项目经验" placeholder="Trap / NvM / 指针" /></label>
+          </div>
+          <label>现象<textarea name="symptom" placeholder="我看到了什么？报错、调用栈、异常行为是什么？"></textarea></label>
+          <label>可能原因<textarea name="reason" placeholder="我怀疑和哪个模块、配置、指针、地址有关？"></textarea></label>
+          <label>下一步动作<textarea name="action" placeholder="下一次我应该查什么、截图什么、验证什么？"></textarea></label>
+          <div class="hero-actions"><button type="submit">保存经验</button><button type="button" class="ghost" id="export">导出备份</button></div>
+        </form>
+      </section>
+
+      <section style="margin-top:46px">
+        <div class="section-head">
+          <div><span class="kicker">项目经验库</span><h2>已沉淀的现场记录</h2></div>
+        </div>
+        <div class="notes" id="notes"></div>
+      </section>
+    </main>
+
+    <script>
+      const cards = [
+        {
+          id: "trap",
+          cls: "trap",
+          area: "TriCore / Lauterbach",
+          level: "需要工程化",
+          title: "进 Trap 后，先从调用栈还原事故现场",
+          summary: "先不要急着背 Trap 类型。第一步是用 Lauterbach 的调用栈、PC、A11 返回地址和异常上下文，判断代码是在哪里偏离正常路径的。",
+          steps: ["保存 Trap 现场：PC、PSW、D15、A11、CSA 链、Trap class 和 TIN。", "看调用栈是否可信：栈断裂通常提示指针越界、CSA 损坏或栈/上下文被覆盖。", "回到最近一次业务调用：找到进入驱动、BSW 模块或回调函数的边界。", "结合 map 文件确认地址属于代码、RAM、外设寄存器还是非法区域。"],
+          scenario: "例如 NvM 写入后进 Trap，不要只盯 NvM。先确认崩溃地址是不是 Fee/Fls 回调、MemIf 适配层，还是用户传入的 RAM Block 指针。",
+          next: "整理一张 Lauterbach Trap 排查清单：截图、命令、字段解释、判断分支。",
+          analogy: "可以把调用栈理解成电梯的楼层记录：程序从 main 一层层调用到驱动、回调、底层函数。Trap 就像电梯突然停住，调用栈能告诉你它大概经过了哪些楼层，但如果钢缆已经断了，楼层记录也可能乱掉。",
+          ladder: ["确认 Trap class 和 TIN，只判断大方向，不立刻下结论。", "记录 PC、A11、PSW、D15、CSA 链，防止重启后证据丢失。", "用 Lauterbach 看调用栈，找最近一次从业务代码进入 BSW/MCAL 的边界。", "拿异常地址对 map 文件，判断它属于代码、RAM、Flash、外设寄存器还是非法区。"],
+          checklist: ["调用栈完整但停在某个函数：优先看该函数入参、局部指针、数组下标。", "调用栈断裂：优先怀疑栈、CSA、返回地址、非法函数指针或内存覆盖。", "PC 指向 0x0 或固定异常值：优先看空指针、未初始化函数指针、结构体成员未配置。"],
+          practice: ["下次遇到 Trap，先截图调用栈、寄存器窗口和异常地址。", "把异常 PC 放进 map 文件里查一次。", "把最近一次函数调用的每个指针入参列出来。"],
+        },
+        {
+          id: "memory",
+          cls: "memory",
+          area: "TC387 / Linker / LSL",
+          level: "会用但不稳",
+          title: "Memory Map 不是文件目录，是芯片地址世界的地图",
+          summary: "Memory Map 让你知道代码、常量、变量、栈、堆、外设寄存器、Flash Bank 分别住在哪里。排查越界、初始化失败、启动异常时非常关键。",
+          steps: ["先分清地址空间：PFlash、DFlash、DSPR、PSPR、LMU、外设寄存器。", "再看链接脚本如何把 section 放进去：text、rodata、data、bss、stack。", "最后把 map 文件和调试器地址对上，判断异常地址是否合理。", "遇到初始化值不对，要看 data 从 Flash 复制到 RAM 的启动流程。"],
+          scenario: "例如一个全局变量上电后不是期望值，可能不是 C 语法问题，而是 section 放置、启动复制表或清零流程出了问题。",
+          next: "建立 TC387 Memory Map 可视化页：地址段、用途、常见事故、调试入口。",
+          analogy: "它像一座城市地图：PFlash 是档案馆，RAM 是办公桌，DFlash 是长期保存柜，外设寄存器是设备开关。",
+          ladder: ["分清 PFlash、DFlash、DSPR、PSPR、LMU 的用途。", "理解 .text、.rodata、.data、.bss、stack。", "看 LSL 如何把 section 放到具体地址段。", "读 map 文件，把变量名、函数名、地址、大小关联起来。"],
+          checklist: ["变量上电值不对：查 .data 是否被正确复制。", "变量总是 0：查 .bss 清零是否覆盖了不该覆盖的区域。", "Flash 写失败：查目标地址属于 PFlash、DFlash 还是 Fee 管理区。"],
+          practice: ["找一个全局变量，在 map 文件中查地址和 section。", "找一个函数地址，确认它落在 PFlash 哪个区域。", "画出当前工程最常用的 6 个地址段。"],
+        },
+        {
+          id: "autosar",
+          cls: "autosar",
+          area: "AUTOSAR BSW / ISOLAR",
+          level: "需要工程化",
+          title: "NvM / Fee 要从配置链路看，不要孤立背模块",
+          summary: "NvM、MemIf、Fee、Fls 是一条链。ISOLAR 里配的是 Block、Device、Cluster、Job、回调和初始化关系，工程问题通常出在链路不一致。",
+          steps: ["从 NvM Block 开始：Block ID、RAM Block、ROM Default、Immediate Data、Write Once。", "向下追 MemIf Device 和 Fee Block，确认 Block 映射和大小是否一致。", "看 Fee Cluster、Virtual Page、擦写策略，判断写入失败是否和 Flash 布局相关。", "结合 EcuM/BswM 初始化顺序，确认 NvM_ReadAll 和 NvM_WriteAll 的时机。"],
+          scenario: "例如标定值掉电不保存，可能是 NvM 没触发 WriteAll、Fee Job Pending、Fls 擦除失败，或者 RAM Block 地址配置错。",
+          next: "做一篇 ISOLAR 配置导览：从 NvM Block 点进去，一路追到 Fee/Fls。",
+          analogy: "可以把 NvM 当成前台，Fee 是仓库管理员，Fls 是真正开门关门的工人。ISOLAR 配置就是告诉前台每个包裹叫什么、放哪个仓库、仓库格子多大。",
+          ladder: ["在 ISOLAR 里找到 NvM Block。", "确认 RAM Block 地址来源。", "向下追 MemIf Device Index。", "检查 Fee Block、Cluster、Virtual Page 和 DFlash 布局。"],
+          checklist: ["掉电不保存：查是否调用 WriteBlock/WriteAll。", "读出默认值：查 ROM Default、ReadAll 时机、Block Valid 状态。", "偶发 pending：查 NvM/Fee/Fls MainFunction 调度周期。"],
+          practice: ["在 ISOLAR 中选一个 NvM Block，从 NvM 一路截图到 Fee/Fls。", "写一张 Block ID、长度、RAM 地址、默认值、下层 Fee Block 的表。", "模拟掉电不保存问题，列出 8 个配置检查点。"],
+        },
+        {
+          id: "pointer",
+          cls: "pointer",
+          area: "C 语言 / 嵌入式",
+          level: "会用但不稳",
+          title: "C 指针先按使用场景学，不要先啃定义",
+          summary: "指针不是一个单独概念，它经常以数组访问、结构体传参、回调函数、内存映射寄存器、AUTOSAR 缓冲区的形式出现。",
+          steps: ["数组场景：uint8* buffer 表示一段连续数据，不只是一个数字地址。", "结构体场景：ConfigType* cfg 让函数读取一整组配置，而不是复制大对象。", "回调场景：函数指针把底层事件交给上层处理。", "寄存器场景：volatile 指针告诉编译器这个地址背后是硬件。"],
+          scenario: "例如 Fee_Write(BlockNumber, DataBufferPtr) 里的 DataBufferPtr 只是告诉 Fee 从哪一段 RAM 取待写入数据。",
+          next: "建立 C 指针 20 个工程例子：每个例子配图、错法、正确写法。",
+          analogy: "如果变量是一箱零件，普通传参像把整箱搬过去，指针像给对方仓库位置和货架号。对方可以直接去拿，但如果你给错位置，它也会真的去错地方。",
+          ladder: ["普通变量指针，理解 int* p 指向一个 int。", "数组和 buffer，理解 uint8* data 指向一段连续数据。", "结构体指针，理解 ConfigType* cfg 指向一组配置。", "函数指针和回调，理解把处理函数入口地址传给别人。"],
+          checklist: ["看到 *p：先问它指向谁，生命周期还在不在。", "看到 p[i]：先问数组长度是谁保证的。", "看到 void*：先问真实数据类型在哪里恢复。"],
+          practice: ["把 Fee_Write 的 DataBufferPtr 画成 RAM 中的一段字节。", "写 5 个结构体指针例子。", "收集项目里 10 个指针用法。"],
+        },
+      ];
+
+      const seedNotes = [
+        { title: "NvM 写入后异常，先排除 RAM Block 指针", source: "项目经验模板", tag: "NvM / Fee", symptom: "写入动作后偶发 Trap 或数据未保存。", reason: "可能是 RAM Block 地址、长度、对齐或生命周期不对。", action: "在 ISOLAR 中核对 Block 长度，再用 Lauterbach 看 DataBufferPtr 指向的 RAM 地址是否有效。", createdAt: "2026-07-14" },
+        { title: "调用栈断裂时，不要盲目信任最上层函数名", source: "Trap 排查模板", tag: "Trap", symptom: "Lauterbach 调用栈显示不完整，或者停在奇怪地址。", reason: "可能是 CSA 链损坏、栈被覆盖、函数指针跳转错误或非法地址执行。", action: "记录 PC/A11/CSA，结合 map 文件判断地址归属，再回看最近一次指针写入。", createdAt: "2026-07-14" },
+      ];
+
+      const storageKey = "tc387-gh-pages-notes";
+      const state = { notes: JSON.parse(localStorage.getItem(storageKey) || "null") || seedNotes };
+
+      function renderCards(filter = "") {
+        const target = document.getElementById("cards");
+        const text = filter.trim().toLowerCase();
+        target.innerHTML = cards
+          .filter((card) => !text || `${card.title} ${card.area} ${card.summary} ${card.scenario}`.toLowerCase().includes(text))
+          .map((card) => `<article class="card ${card.cls}">
+            <div class="topline"><span>${card.area}</span><em>${card.level}</em></div>
+            <h3>${card.title}</h3>
+            <p>${card.summary}</p>
+            <ol>${card.steps.map((step) => `<li>${step}</li>`).join("")}</ol>
+            <div class="scenario"><strong>工程场景</strong><p>${card.scenario}</p></div>
+            <div class="next">${card.next}</div>
+            <button data-read="${card.id}" style="width:100%;margin-top:14px;background:#fff;color:#1f5f4d">进入学习文章</button>
+          </article>`)
+          .join("");
+      }
+
+      function renderReader(card = cards[0]) {
+        document.getElementById("reader-title").textContent = card.title;
+        document.getElementById("reader-opening").textContent = card.summary;
+        document.getElementById("reader-analogy").textContent = card.analogy;
+        document.getElementById("reader-ladder").innerHTML = card.ladder.map((x) => `<li>${x}</li>`).join("");
+        document.getElementById("reader-checklist").innerHTML = card.checklist.map((x) => `<li>${x}</li>`).join("");
+        document.getElementById("reader-practice").innerHTML = card.practice.map((x, i) => `<div><strong>${i + 1}</strong><p>${x}</p></div>`).join("");
+      }
+
+      function renderNotes() {
+        document.getElementById("notes").innerHTML = state.notes.map((note) => `<article class="note">
+          <div><span>${note.tag}</span><time>${note.createdAt}</time></div>
+          <h3>${note.title}</h3>
+          <p><strong>现象：</strong>${note.symptom}</p>
+          <p><strong>可能原因：</strong>${note.reason}</p>
+          <p><strong>下一步：</strong>${note.action}</p>
+          <small>${note.source}</small>
+        </article>`).join("");
+      }
+
+      document.getElementById("search").addEventListener("input", (event) => renderCards(event.target.value));
+      document.getElementById("cards").addEventListener("click", (event) => {
+        const id = event.target.dataset.read;
+        if (!id) return;
+        renderReader(cards.find((card) => card.id === id));
+        document.getElementById("reader").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      document.getElementById("note-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget));
+        const note = {
+          title: data.title || "未命名经验",
+          source: data.source || "电脑网页导入",
+          tag: data.tag || "项目经验",
+          symptom: data.symptom || "待补充现象",
+          reason: data.reason || "待分析原因",
+          action: data.action || "待整理下一步",
+          createdAt: new Date().toISOString().slice(0, 10),
+        };
+        state.notes = [note, ...state.notes];
+        localStorage.setItem(storageKey, JSON.stringify(state.notes));
+        event.currentTarget.reset();
+        event.currentTarget.elements.tag.value = "项目经验";
+        document.getElementById("status").textContent = "已保存到当前浏览器，并可导出备份。";
+        renderNotes();
+      });
+      document.getElementById("export").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(state.notes, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `tc387-notes-${new Date().toISOString().slice(0, 10)}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      renderCards();
+      renderReader();
+      renderNotes();
+    </script>
+  </body>
+</html>
