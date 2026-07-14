@@ -635,6 +635,17 @@ button {
   margin-top: 22px;
 }
 
+.cloud-status {
+  margin-top: 18px;
+  border: 1px solid #c9d8ce;
+  border-radius: 8px;
+  background: #f8fbf7;
+  color: #245243;
+  font-weight: 800;
+  line-height: 1.55;
+  padding: 13px 14px;
+}
+
 .principles span {
   border-left: 4px solid var(--green);
   background: #eaf1ea;

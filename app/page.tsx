@@ -270,13 +270,12 @@ const seedNotes: CaptureNote[] = [
   },
 ];
 
-const storageKey = "tc387-learning-library-notes";
-
 export default function Home() {
   const [active, setActive] = useState<FocusKey>("daily");
   const [selectedId, setSelectedId] = useState("trap-stack");
   const [query, setQuery] = useState("");
   const [notes, setNotes] = useState<CaptureNote[]>(seedNotes);
+  const [notesStatus, setNotesStatus] = useState("正在连接云端经验库...");
   const [form, setForm] = useState({
     title: "",
     source: "",
@@ -287,23 +286,52 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(storageKey);
-    if (stored) {
+    let cancelled = false;
+
+    async function loadNotes() {
       try {
-        const parsed = JSON.parse(stored) as CaptureNote[];
+        const response = await fetch("/api/notes", { cache: "no-store" });
+        const payload = (await response.json()) as {
+          notes?: CaptureNote[];
+          error?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(payload.error || "云端经验库读取失败");
+        }
+
+        if (cancelled) return;
+
+        const cloudNotes = (payload.notes ?? []).map((note) => ({
+          ...note,
+          id: String(note.id),
+          createdAt: note.createdAt?.slice(0, 10) || "云端记录",
+        }));
+
         const missingSeeds = seedNotes.filter(
-          (seed) => !parsed.some((note) => note.id === seed.id),
+          (seed) => !cloudNotes.some((note) => note.title === seed.title),
         );
-        setNotes([...parsed, ...missingSeeds]);
-      } catch {
+
+        setNotes([...cloudNotes, ...missingSeeds]);
+        setNotesStatus(
+          cloudNotes.length
+            ? `已连接云端经验库：${cloudNotes.length} 条云端记录`
+            : "已连接云端经验库：当前还没有你新增的云端记录",
+        );
+      } catch (error) {
+        if (cancelled) return;
+        const message = error instanceof Error ? error.message : "云端经验库暂时不可用";
         setNotes(seedNotes);
+        setNotesStatus(`云端经验库暂时不可用：${message}`);
       }
     }
-  }, []);
 
-  useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify(notes));
-  }, [notes]);
+    loadNotes();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredCards = useMemo(() => {
     const text = query.trim().toLowerCase();
@@ -331,30 +359,50 @@ export default function Home() {
     if (firstMatch) setSelectedId(firstMatch.id);
   }
 
-  function addNote(event: FormEvent<HTMLFormElement>) {
+  async function addNote(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!form.title.trim()) return;
 
-    const nextNote: CaptureNote = {
-      id: `note-${Date.now()}`,
-      title: form.title.trim(),
-      source: form.source.trim() || "电脑网页导入",
-      tag: form.tag.trim() || "项目经验",
-      symptom: form.symptom.trim() || "待补充现象",
-      reason: form.reason.trim() || "待分析原因",
-      action: form.action.trim() || "待整理下一步",
-      createdAt: new Date().toISOString().slice(0, 10),
-    };
+    setNotesStatus("正在保存到云端经验库...");
 
-    setNotes((current) => [nextNote, ...current]);
-    setForm({
-      title: "",
-      source: "",
-      tag: "项目经验",
-      symptom: "",
-      reason: "",
-      action: "",
-    });
+    try {
+      const response = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const payload = (await response.json()) as {
+        note?: CaptureNote;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.note) {
+        throw new Error(payload.error || "保存失败");
+      }
+
+      const nextNote: CaptureNote = {
+        ...payload.note,
+        id: String(payload.note.id),
+        createdAt: payload.note.createdAt?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+      };
+
+      setNotes((current) => [
+        nextNote,
+        ...current.filter((note) => note.title !== nextNote.title),
+      ]);
+      setForm({
+        title: "",
+        source: "",
+        tag: "项目经验",
+        symptom: "",
+        reason: "",
+        action: "",
+      });
+      setNotesStatus("已保存到云端经验库，换设备打开也能看到。");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "保存失败";
+      setNotesStatus(`保存失败：${message}`);
+    }
   }
 
   function exportNotes() {
@@ -542,8 +590,9 @@ export default function Home() {
             <span className="section-kicker">电脑网页导入</span>
             <h2>把新知识先收进来，再慢慢整理</h2>
             <p>
-              录入时不要求一次写完美。先把“现象、可能原因、下一步动作”留下，后面再扩展成学习文章或排查卡。
+              录入时不要求一次写完美。先把“现象、可能原因、下一步动作”留下，保存后会进入云端经验库，后面再扩展成学习文章或排查卡。
             </p>
+            <div className="cloud-status">{notesStatus}</div>
             <div className="principles">
               <span>先记录项目现场</span>
               <span>再补概念解释</span>
