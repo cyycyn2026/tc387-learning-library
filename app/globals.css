@@ -495,6 +495,70 @@ button {
   line-height: 1.65;
 }
 
+.resource-reader {
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+  gap: 18px;
+  margin-top: 18px;
+  border: 1px solid #cfdacf;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.resource-reader aside {
+  padding: 26px;
+  background: #edf5f1;
+}
+
+.resource-reader aside h2 {
+  margin: 12px 0 14px;
+  color: var(--ink);
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.resource-reader aside p {
+  color: #48554d;
+  line-height: 1.75;
+}
+
+.resource-reader > div {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+}
+
+.resource-reader section {
+  border-bottom: 1px solid #edf1ed;
+  padding-bottom: 16px;
+}
+
+.resource-reader section:last-child {
+  border-bottom: 0;
+}
+
+.resource-reader h3 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 20px;
+}
+
+.resource-reader ol,
+.resource-reader ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 22px;
+  color: #344139;
+  line-height: 1.7;
+}
+
+.file-list--reader {
+  margin-top: 8px;
+}
+
 .queue-section {
   margin-bottom: 28px;
 }
@@ -907,6 +971,7 @@ button {
   }
 
   .article-reader,
+  .resource-reader,
   .rules-section {
     grid-template-columns: 1fr;
   }

@@ -35,11 +35,15 @@ type CaptureNote = {
 };
 
 type ResourcePack = {
+  id: string;
   title: string;
   count: string;
   files: string[];
   learn: string;
   use: string;
+  firstRead: string;
+  detail: string[];
+  checkpoints: string[];
 };
 
 type StudyQueueItem = {
@@ -263,53 +267,81 @@ const learningRules = [
 
 const resourcePacks: ResourcePack[] = [
   {
+    id: "dtc-upload",
     title: "DTC 主动上传与诊断通信",
     count: "6 份",
     files: ["DTC主动上传需求", "I293系统功能定义", "DiagAgent.c", "UploadDtc.c", "BSW诊断通信总结"],
     learn: "从故障产生、Dem 记录、上传触发、通信发送到失败重试，建立一条完整问题链。",
     use: "下次遇到 DTC 不上报、重复上报或报码不一致时，按触发条件、状态机、通信路径、NVM 记录四步定位。",
+    firstRead: "先从 DTC 主动上传需求和 I293 功能定义读起，再回到 DiagAgent / UploadDtc 代码看状态机和发送路径。",
+    detail: ["这组资料解决的是“故障已经产生，软件怎么判断要不要主动告诉外部系统”。", "阅读时不要先陷进每个宏定义，先画出触发源、筛选条件、上传接口、失败重试、持久化记录。", "代码资料适合拿来训练调用链阅读：从周期函数或入口函数开始，沿着状态变量、发送函数、日志函数往下追。"],
+    checkpoints: ["DTC 触发条件在哪里判断", "上传报文由哪个模块组帧", "失败后是否记录到 NVM 或日志", "重复上传如何抑制"],
   },
   {
+    id: "uds-did-eol",
     title: "UDS / DID / EOL / 刷写",
     count: "5 份",
     files: ["EOL_DID学习资料", "EOL_DID逻辑136/90", "UDS诊断与刷写", "OBC CALID/CVN NVM", "DiagAgent日志"],
     learn: "把 DID 当成诊断服务和项目数据之间的接口，重点看 EOL 写入、读出、刷写日志和 CALID/CVN 存储。",
     use: "排查 DID 读不出来时，先确认服务 ID、DID 映射、数据来源、NVM Block 和会话/安全条件。",
+    firstRead: "先看 EOL_DID 学习资料建立概念，再用 136/90 逻辑和 CALID/CVN 资料追一个真实 DID 的数据来源。",
+    detail: ["这组资料的核心不是背 UDS 服务号，而是理解“诊断请求如何拿到项目里的真实数据”。", "EOL 数据、CALID/CVN、刷写日志通常都不是凭空返回，而是来自 RAM、NVM、标定区或刷写过程记录。", "学习时选一个 DID 做样本，追完整链路：请求进入、条件检查、数据读取、响应组帧、异常响应。"],
+    checkpoints: ["DID 表在哪里配置", "数据源来自 RAM 还是 NVM", "读写需要什么会话和安全等级", "异常响应 NRC 对应什么失败条件"],
   },
   {
+    id: "nvm-fee-fls",
     title: "NvM / Fee / Fls 存储体系",
     count: "10 份",
     files: ["autosar_nvm_fee_guide", "FEE vs Fls", "ReadAll/WriteAll", "NvM vs NvMDat", "NVM全体系"],
     learn: "从 NvM Block 追到 MemIf、Fee、Fls，理解下电存储、上电读取、Block 映射和 ISOLAR 配置。",
     use: "遇到掉电不保存、上电默认值、Fee pending、读写失败时，按 NvM 请求、Block 配置、Fee 队列、Fls 状态逐层排查。",
+    firstRead: "先读 ReadAll/WriteAll 调用链，再看 FEE vs Fls 分层，最后回到 ISOLAR 里的 NvM Block 配置。",
+    detail: ["这组资料最适合补你提到的 NvM/Fee 薄弱点，因为它能把配置、调用链和物理 Flash 行为连起来。", "NvM_WriteAll 不是瞬间把数据写进 Flash，而是发起请求，后面依赖 MemIf/Fee/Fls 的 MainFunction 推进。", "学习时一定要把 ISOLAR 配置截图和代码调用链放在一起看，否则很容易只懂概念，不会排查。"],
+    checkpoints: ["NvM Block ID 和 Fee Block 是否映射一致", "RAM Block 地址和长度是否正确", "ReadAll/WriteAll 由谁触发", "Fee/Fls MainFunction 是否持续调度"],
   },
   {
+    id: "can-nm",
     title: "CAN/CANFD 网络管理",
     count: "1 份",
     files: ["VTS CAN(CANFD)网络管理规范"],
     learn: "把网络管理看成车辆通信的睡眠、唤醒和保持在线规则，和诊断通信、下电存储放在一起理解。",
     use: "排查诊断掉线、无法休眠、唤醒后状态异常时，先看 NM 状态、报文周期、节点请求和 BswM/EcuM 联动。",
+    firstRead: "先读网络管理状态和报文周期，再把它和诊断在线、下电存储、EcuM/BswM 状态切换联系起来。",
+    detail: ["CAN 网络管理不是孤立通信规范，它会影响 ECU 是否保持在线、是否允许休眠、是否触发下电流程。", "对你来说，重点不是一次读完整份规范，而是把 NM 状态和项目现象对上：为什么诊断断了、为什么不休眠、为什么唤醒后状态不对。"],
+    checkpoints: ["节点处于 Repeat Message、Normal Operation 还是 Prepare Bus Sleep", "谁在请求网络保持唤醒", "NM 状态变化是否触发 BswM/EcuM 动作", "诊断会话是否被网络状态打断"],
   },
   {
+    id: "gate-driver",
     title: "门极驱动与底层 CDD",
     count: "4 份",
     files: ["CA-IS3217 datasheet", "CaiGDrv模块原理", "NsiGDrv调用关系", "芯片速查手册"],
     learn: "把芯片引脚、低电平有效故障、Desat、UVLO、RDY/FLT 和 CDD 采集逻辑连成一张硬件到软件的图。",
     use: "遇到驱动故障报码时，先确认物理引脚电平，再看 IoHwAb、CDD 聚合故障字、RTE 接口和诊断上报。",
+    firstRead: "先读芯片速查手册建立引脚和故障含义，再看 CaiGDrv/NsiGDrv 的调用关系。",
+    detail: ["这组资料连接硬件和软件：芯片的 FLT/RDY/DESAT/UVLO 不是停在 datasheet 上，最终要被 IoHwAb/CDD 读成软件故障字。", "学习时要特别注意低电平有效、取反逻辑、故障锁存和复位条件，这些地方最容易导致“电平看着对，软件报码不对”。"],
+    checkpoints: ["故障引脚是否低电平有效", "CDD 是否对电平取反", "故障字每一位代表哪个芯片/桥臂", "诊断报码是否区分 Desat 和 UVLO"],
   },
   {
+    id: "eight-d",
     title: "8D 故障报告与复盘",
     count: "2 份",
     files: ["8D故障报告整理", "Kimi 8D结论先行包"],
     learn: "把排查过程整理成结论先行的内部报告：问题是什么、影响多大、根因是什么、已做什么、还差什么。",
     use: "每次项目问题结束后，用 D1-D8 做复盘，把工程经验反哺到资料库和下一次排查清单。",
+    firstRead: "先看 8D 故障报告整理里的结论先行结构，再把最近一次项目问题套进去。",
+    detail: ["这组资料不是技术模块，但它能把你的项目经验变成可复用资产。", "报告不要从背景铺开，而要先说结论：问题是什么、当前影响、根因判断、已经采取的措施、下一步计划。", "D1-D8 适合做支撑结构，不适合让读者在里面找重点。"],
+    checkpoints: ["是否先给结论", "问题现象是否可复现", "根因和证据是否对应", "纠正措施和预防措施是否分清"],
   },
   {
+    id: "system-context",
     title: "系统理解扩展",
     count: "3 份",
     files: ["P0/P4混动构型", "聊天记录", "项目资料摘要"],
     learn: "补齐电机控制器所在系统位置，知道软件模块为什么服务于整车、电驱和诊断目标。",
     use: "当单个模块学不动时，回到系统层看：这个信号从哪里来、影响谁、失败后车辆会发生什么。",
+    firstRead: "先读 P0/P4 混动构型，知道电机控制器在系统里的位置，再回看具体模块。",
+    detail: ["这组资料帮你从模块视角跳到系统视角。", "当 NvM、DTC、门极驱动这些知识点变成一堆孤立名词时，系统资料能回答：为什么这个数据要保存、为什么这个故障要上传、为什么这个驱动状态会影响整车。"],
+    checkpoints: ["当前模块服务哪个系统目标", "信号从哪里来、到哪里去", "故障会影响驾驶、充电还是诊断", "哪些信息需要掉电保持"],
   },
 ];
 
@@ -347,6 +379,7 @@ const seedNotes: CaptureNote[] = [
 export default function Home() {
   const [active, setActive] = useState<FocusKey>("daily");
   const [selectedId, setSelectedId] = useState("trap-stack");
+  const [selectedResourceId, setSelectedResourceId] = useState("dtc-upload");
   const [query, setQuery] = useState("");
   const [notes, setNotes] = useState<CaptureNote[]>(seedNotes);
   const [notesStatus, setNotesStatus] = useState("正在连接云端经验库...");
@@ -434,6 +467,8 @@ export default function Home() {
 
   const selectedCard =
     knowledgeCards.find((card) => card.id === selectedId) ?? knowledgeCards[0];
+  const selectedResource =
+    resourcePacks.find((pack) => pack.id === selectedResourceId) ?? resourcePacks[0];
 
   function selectTab(key: FocusKey) {
     setActive(key);
@@ -632,9 +667,49 @@ export default function Home() {
                     <dd>{pack.use}</dd>
                   </div>
                 </dl>
+                <button
+                  className="read-button"
+                  type="button"
+                  onClick={() => setSelectedResourceId(pack.id)}
+                >
+                  查看资料详情
+                </button>
               </article>
             ))}
           </div>
+          <article className="resource-reader">
+            <aside>
+              <span className="section-kicker">资料详情</span>
+              <h2>{selectedResource.title}</h2>
+              <p>{selectedResource.firstRead}</p>
+            </aside>
+            <div>
+              <section>
+                <h3>包含资料</h3>
+                <div className="file-list file-list--reader">
+                  {selectedResource.files.map((file) => (
+                    <span key={file}>{file}</span>
+                  ))}
+                </div>
+              </section>
+              <section>
+                <h3>怎么看</h3>
+                <ol>
+                  {selectedResource.detail.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ol>
+              </section>
+              <section>
+                <h3>排查检查点</h3>
+                <ul>
+                  {selectedResource.checkpoints.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+          </article>
         </section>
 
         <section id="queue" className="queue-section" aria-label="下一步学习队列">
