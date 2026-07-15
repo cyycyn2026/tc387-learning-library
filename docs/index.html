@@ -186,6 +186,9 @@
 
       .tabs,
       .daily,
+      .import-summary,
+      .resource-grid,
+      .study-queue,
       .radar,
       .cards,
       .notes {
@@ -242,6 +245,134 @@
         font-size: 12px;
         font-weight: 900;
         padding: 5px 10px;
+      }
+
+      .import-summary {
+        grid-template-columns: 1.05fr 0.95fr;
+        align-items: stretch;
+        margin: 28px 0 18px;
+      }
+
+      .summary-card,
+      .resource-card,
+      .queue-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .summary-card {
+        display: grid;
+        gap: 14px;
+        padding: 24px;
+      }
+
+      .summary-card strong {
+        font-size: clamp(30px, 4vw, 54px);
+        line-height: 1;
+      }
+
+      .summary-card ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .privacy-card {
+        background: #edf5f1;
+      }
+
+      .resource-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-bottom: 24px;
+      }
+
+      .resource-card {
+        display: grid;
+        gap: 12px;
+        padding: 20px;
+      }
+
+      .resource-card header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .resource-card h3,
+      .queue-card h3 {
+        margin: 0;
+        line-height: 1.35;
+      }
+
+      .resource-card em {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: #eef5ef;
+        color: #1f5f4d;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 900;
+        padding: 5px 10px;
+      }
+
+      .resource-card dl {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+      }
+
+      .resource-card div {
+        border-top: 1px solid #edf1ed;
+        padding-top: 10px;
+      }
+
+      .resource-card dt {
+        color: #1f5f4d;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .resource-card dd {
+        margin: 3px 0 0;
+        color: #48554d;
+        line-height: 1.65;
+      }
+
+      .file-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .file-list span {
+        border: 1px solid #dce5dc;
+        border-radius: 999px;
+        background: #fafbf8;
+        color: #4a574f;
+        font-size: 12px;
+        padding: 5px 8px;
+      }
+
+      .study-queue {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin-bottom: 28px;
+      }
+
+      .queue-card {
+        min-height: 210px;
+        padding: 18px;
+      }
+
+      .queue-card span {
+        display: inline-flex;
+        margin-bottom: 12px;
+        border-radius: 999px;
+        background: #f1f3ed;
+        color: #966c18;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 5px 9px;
       }
 
       .radar {
@@ -450,6 +581,9 @@
           grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
+        .import-summary,
+        .resource-grid,
+        .study-queue,
         .radar,
         .notes {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -474,6 +608,9 @@
 
         .tabs,
         .daily,
+        .import-summary,
+        .resource-grid,
+        .study-queue,
         .radar,
         .cards,
         .notes,
@@ -538,6 +675,41 @@
         <article class="radar-card"><div><strong>NvM / Fee / ISOLAR</strong><span>32%</span></div><p class="bar"><i style="width:32%"></i></p><p>需要从配置链路建立整体感。</p></article>
         <article class="radar-card"><div><strong>C 指针工程用法</strong><span>42%</span></div><p class="bar"><i style="width:42%"></i></p><p>能写一点，但读复杂入参会卡。</p></article>
         <article class="radar-card"><div><strong>项目经验沉淀</strong><span>22%</span></div><p class="bar"><i style="width:22%"></i></p><p>需要把现场问题及时记录下来。</p></article>
+      </section>
+
+      <section id="resources" style="margin-top:34px">
+        <div class="section-head">
+          <div>
+            <span class="kicker">新导入资料包</span>
+            <h2>把下载资料整理成 7 条学习主线</h2>
+          </div>
+        </div>
+        <div class="import-summary">
+          <article class="summary-card">
+            <span class="kicker">本次整理</span>
+            <strong>31 份资料</strong>
+            <p>已按工程用途归档为 DTC 主动上传、UDS/EOL DID、NvM/Fee/Fls、CAN 网络管理、门极驱动、8D 复盘和系统扩展。网页只沉淀学习索引，不公开原始项目资料。</p>
+          </article>
+          <article class="summary-card privacy-card">
+            <span class="kicker">使用原则</span>
+            <ul>
+              <li>先用文件建立知识地图，再挑一条线深挖。</li>
+              <li>每类资料都绑定一个工程问题，避免只收藏不消化。</li>
+              <li>涉及项目代码、需求和报告的内容只做脱敏摘要。</li>
+            </ul>
+          </article>
+        </div>
+        <div class="resource-grid" id="resources-grid"></div>
+      </section>
+
+      <section id="queue" style="margin-top:28px">
+        <div class="section-head">
+          <div>
+            <span class="kicker">下一步学习队列</span>
+            <h2>从资料变成能力的 5 个入口</h2>
+          </div>
+        </div>
+        <div class="study-queue" id="study-queue"></div>
       </section>
 
       <section class="cards" id="cards"></section>
@@ -653,6 +825,66 @@
         { title: "调用栈断裂时，不要盲目信任最上层函数名", source: "Trap 排查模板", tag: "Trap", symptom: "Lauterbach 调用栈显示不完整，或者停在奇怪地址。", reason: "可能是 CSA 链损坏、栈被覆盖、函数指针跳转错误或非法地址执行。", action: "记录 PC/A11/CSA，结合 map 文件判断地址归属，再回看最近一次指针写入。", createdAt: "2026-07-14" },
       ];
 
+      const resourcePacks = [
+        {
+          title: "DTC 主动上传与诊断通信",
+          count: "6 份",
+          files: ["DTC主动上传需求", "I293系统功能定义", "DiagAgent.c", "UploadDtc.c", "BSW诊断通信总结"],
+          learn: "从故障产生、Dem 记录、上传触发、通信发送到失败重试，建立一条完整问题链。",
+          use: "下次遇到 DTC 不上报、重复上报或报码不一致时，按触发条件、状态机、通信路径、NVM 记录四步定位。",
+        },
+        {
+          title: "UDS / DID / EOL / 刷写",
+          count: "5 份",
+          files: ["EOL_DID学习资料", "EOL_DID逻辑136/90", "UDS诊断与刷写", "OBC CALID/CVN NVM", "DiagAgent日志"],
+          learn: "把 DID 当成诊断服务和项目数据之间的接口，重点看 EOL 写入、读出、刷写日志和 CALID/CVN 存储。",
+          use: "排查 DID 读不出来时，先确认服务 ID、DID 映射、数据来源、NVM Block 和会话/安全条件。",
+        },
+        {
+          title: "NvM / Fee / Fls 存储体系",
+          count: "10 份",
+          files: ["autosar_nvm_fee_guide", "FEE vs Fls", "ReadAll/WriteAll", "NvM vs NvMDat", "NVM全体系"],
+          learn: "从 NvM Block 追到 MemIf、Fee、Fls，理解下电存储、上电读取、Block 映射和 ISOLAR 配置。",
+          use: "遇到掉电不保存、上电默认值、Fee pending、读写失败时，按 NvM 请求、Block 配置、Fee 队列、Fls 状态逐层排查。",
+        },
+        {
+          title: "CAN/CANFD 网络管理",
+          count: "1 份",
+          files: ["VTS CAN(CANFD)网络管理规范"],
+          learn: "把网络管理看成车辆通信的睡眠、唤醒和保持在线规则，和诊断通信、下电存储放在一起理解。",
+          use: "排查诊断掉线、无法休眠、唤醒后状态异常时，先看 NM 状态、报文周期、节点请求和 BswM/EcuM 联动。",
+        },
+        {
+          title: "门极驱动与底层 CDD",
+          count: "4 份",
+          files: ["CA-IS3217 datasheet", "CaiGDrv模块原理", "NsiGDrv调用关系", "芯片速查手册"],
+          learn: "把芯片引脚、低电平有效故障、Desat、UVLO、RDY/FLT 和 CDD 采集逻辑连成一张硬件到软件的图。",
+          use: "遇到驱动故障报码时，先确认物理引脚电平，再看 IoHwAb、CDD 聚合故障字、RTE 接口和诊断上报。",
+        },
+        {
+          title: "8D 故障报告与复盘",
+          count: "2 份",
+          files: ["8D故障报告整理", "Kimi 8D结论先行包"],
+          learn: "把排查过程整理成结论先行的内部报告：问题是什么、影响多大、根因是什么、已做什么、还差什么。",
+          use: "每次项目问题结束后，用 D1-D8 做复盘，把工程经验反哺到资料库和下一次排查清单。",
+        },
+        {
+          title: "系统理解扩展",
+          count: "3 份",
+          files: ["P0/P4混动构型", "聊天记录", "项目资料摘要"],
+          learn: "补齐电机控制器所在系统位置，知道软件模块为什么服务于整车、电驱和诊断目标。",
+          use: "当单个模块学不动时，回到系统层看：这个信号从哪里来、影响谁、失败后车辆会发生什么。",
+        },
+      ];
+
+      const studyQueue = [
+        { day: "第 1 站", title: "DTC 主动上传主链路", detail: "从 DiagAgent / UploadDtc 到 Dem、通信发送和失败记录，先画一张调用链图。" },
+        { day: "第 2 站", title: "EOL DID 与 NVM-backed DID", detail: "选一个 DID，追它的诊断服务、数据来源、NvM Block 和上下电读写。" },
+        { day: "第 3 站", title: "NvM/Fee/Fls 下电存储", detail: "用 ReadAll/WriteAll 资料建立 ISOLAR 配置检查表。" },
+        { day: "第 4 站", title: "CAN 网络管理联动", detail: "把 NM 状态机和诊断在线、下电保存、EcuM/BswM 动作放到一张图里。" },
+        { day: "第 5 站", title: "门极驱动故障上报", detail: "从芯片 FLT/RDY 引脚追到 CDD、RTE、DTC，让硬件故障能落到软件证据。" },
+      ];
+
       const storageKey = "tc387-gh-pages-notes";
       const state = { notes: JSON.parse(localStorage.getItem(storageKey) || "null") || seedNotes };
 
@@ -682,6 +914,27 @@
         document.getElementById("reader-practice").innerHTML = card.practice.map((x, i) => `<div><strong>${i + 1}</strong><p>${x}</p></div>`).join("");
       }
 
+      function renderResources(filter = "") {
+        const text = filter.trim().toLowerCase();
+        document.getElementById("resources-grid").innerHTML = resourcePacks
+          .filter((pack) => !text || `${pack.title} ${pack.files.join(" ")} ${pack.learn} ${pack.use}`.toLowerCase().includes(text))
+          .map((pack) => `<article class="resource-card">
+            <header><h3>${pack.title}</h3><em>${pack.count}</em></header>
+            <div class="file-list">${pack.files.map((file) => `<span>${file}</span>`).join("")}</div>
+            <dl>
+              <div><dt>先学什么</dt><dd>${pack.learn}</dd></div>
+              <div><dt>项目里怎么用</dt><dd>${pack.use}</dd></div>
+            </dl>
+          </article>`)
+          .join("");
+      }
+
+      function renderQueue() {
+        document.getElementById("study-queue").innerHTML = studyQueue
+          .map((item) => `<article class="queue-card"><span>${item.day}</span><h3>${item.title}</h3><p>${item.detail}</p></article>`)
+          .join("");
+      }
+
       function renderNotes() {
         document.getElementById("notes").innerHTML = state.notes.map((note) => `<article class="note">
           <div><span>${note.tag}</span><time>${note.createdAt}</time></div>
@@ -693,7 +946,10 @@
         </article>`).join("");
       }
 
-      document.getElementById("search").addEventListener("input", (event) => renderCards(event.target.value));
+      document.getElementById("search").addEventListener("input", (event) => {
+        renderCards(event.target.value);
+        renderResources(event.target.value);
+      });
       document.getElementById("cards").addEventListener("click", (event) => {
         const id = event.target.dataset.read;
         if (!id) return;
@@ -730,6 +986,8 @@
       });
 
       renderCards();
+      renderResources();
+      renderQueue();
       renderReader();
       renderNotes();
     </script>
